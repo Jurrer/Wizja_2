@@ -15,6 +15,7 @@ def display_vid(vid):
             destroy_vid(vid)
 
 
+
 def destroy_vid(vid):
     vid.release()
     cv2.waitKey(1)
