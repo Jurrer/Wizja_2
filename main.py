@@ -1,3 +1,7 @@
+from pprint import pprint
+
+from tabulate import tabulate
+
 from Display_Video import *
 import numpy as np
 import pandas as pd
@@ -42,7 +46,7 @@ def pokaz(obraz, tytul="", osie=False, openCV=True, colmap='gray'):
     plt.title(tytul)
 
 
-def polob(listaobr, ile_k=1, listatyt=[], openCV=True, wart_dpi=100, osie=False, colmap='gray'):
+def polob(listaobr, ile_k=1, listatyt=[], openCV=True, wart_dpi=300, osie=True, colmap='gray'):
     rozm_obr = 5
     ile = len(listaobr)
     if len(listatyt) == 0:
@@ -67,7 +71,7 @@ def ekstrakcja_cech(obiekt_do_ekstrakcji_cech):
     ile_obiektow = len(cechy)
     lista_cech = ['EulerNumber', 'Area', 'BoundingBoxArea', 'FilledArea', 'Extent', 'EquivDiameter', 'Solidity']
     ile_cech = len(lista_cech)
-    tabela_cech = np.zeros((ile_obiektow, ile_cech + 1 + 7))  # "1" - to jedna cecha wyliczna, "7" to momenty Hu
+    tabela_cech = np.zeros((ile_obiektow, ile_cech + 1 + 7))  # "1" - to jedna cecha wyliczana, "7" to momenty Hu
     listaob = []
     for i in range(0, ile_obiektow):
         yp, xp, yk, xk = cechy[i]['BoundingBox']
@@ -96,11 +100,13 @@ def ekstrakcja_klas(obiekt_do_ekstrakcji_klas):
     ile_obiektow = len(cechy)
     print("ile obiektów: ", ile_obiektow)
     # wyszukiwanie kolorów
-    kolory = np.unique(obiekt_do_ekstrakcji_klas.reshape(-1, obiekt_do_ekstrakcji_klas.shape[2]), axis=0)  # kolory w obrazie
+    kolory = np.unique(obiekt_do_ekstrakcji_klas.reshape(-1, obiekt_do_ekstrakcji_klas.shape[2]),
+                       axis=0)  # kolory w obrazie
     # według kolorów przypiszemy klasy obiektom
     kolory = kolory[1:7, :]  # usuwa kolor tła
     ile_kategorii = len(kolory)
     print("Kategorie: ", ile_kategorii)
+
     kategorie = np.zeros((ile_obiektow, 1)).astype('int')
     listaob = []
     for i in range(0, ile_obiektow):
@@ -127,13 +133,17 @@ if __name__ == '__main__':
     b = cv2.inRange(aktualnie_badany, (1, 1, 1), (255, 255, 255))
     # etykietowanie
     etykiety = label(b)
-    polob([aktualnie_badany, b, etykiety], 2)
+    # polob([aktualnie_badany, b, etykiety], 2)
     # wyznaczanie cech
     cechy = regionprops(etykiety)
-
+    lista_cech = list(range(0, 18))
     lo, tc = ekstrakcja_cech(aktualnie_badany)
-    ka = ekstrakcja_klas(aktualnie_badany)
-    print(tc[1])
-    print(ka[1])
+    # ka = ekstrakcja_klas(aktualnie_badany)
+    polob(lo[0:4], 2, listatyt=lista_cech, colmap='winter')
 
-    polob(lo, 10, colmap='winter')
+    Hu = ['Hu numbers' for i in range(7)]
+    lista_cech = ['EulerNumber', 'Area', 'BoundingBoxArea', 'FilledArea', 'Extent', 'EquivDiameter', 'Solidity',
+                  'FilledArea/BoundingBoxArea', ] + Hu
+    temp_tc = tc[0:4]
+    table = tabulate(temp_tc, lista_cech, tablefmt='fancy_grid')
+    print(table)
