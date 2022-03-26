@@ -122,8 +122,6 @@ if __name__ == '__main__':
     path_to_vid = './model/PA_1.avi'
     path_to_pic1 = './model/PA_1_ref.png'
     path_to_pic2 = './model/obiekty.png'
-    video = cv2.VideoCapture(path_to_vid)
-    destroy_vid(video)
 
     # wczytanie obrazu
     o = cv2.imread(path_to_pic1)
@@ -139,11 +137,21 @@ if __name__ == '__main__':
     lista_cech = list(range(0, 18))
     lo, tc = ekstrakcja_cech(aktualnie_badany)
     # ka = ekstrakcja_klas(aktualnie_badany)
-    polob(lo[0:4], 2, listatyt=lista_cech, colmap='winter')
+    polob(lo[0:18], 4, listatyt=lista_cech, colmap='winter')
 
     Hu = ['Hu numbers' for i in range(7)]
     lista_cech = ['EulerNumber', 'Area', 'BoundingBoxArea', 'FilledArea', 'Extent', 'EquivDiameter', 'Solidity',
                   'FilledArea/BoundingBoxArea', ] + Hu
-    temp_tc = tc[0:4]
+
+    temp_tc = np.c_[range(0, 18), tc[0:18]]
+
     table = tabulate(temp_tc, lista_cech, tablefmt='fancy_grid')
     print(table)
+
+    # Classifying by areas
+    big_circle = 1413
+    medium_circle = 665
+    small_circle = 292
+    big_square = 1721
+    medium_square = 841
+    small_square = 271
