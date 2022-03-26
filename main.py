@@ -126,7 +126,11 @@ if __name__ == '__main__':
     # wczytanie obrazu
     o = cv2.imread(path_to_pic1)
     p = cv2.imread(path_to_pic2)
-    aktualnie_badany = o
+    q = cv2.VideoCapture(path_to_vid)
+    aktualnie_badany = q
+
+    if not q.isOpened():
+        print("Error opening video stream or file")
 
     b = cv2.inRange(aktualnie_badany, (1, 1, 1), (255, 255, 255))
     # etykietowanie
@@ -134,24 +138,35 @@ if __name__ == '__main__':
     # polob([aktualnie_badany, b, etykiety], 2)
     # wyznaczanie cech
     cechy = regionprops(etykiety)
-    lista_cech = list(range(0, 18))
     lo, tc = ekstrakcja_cech(aktualnie_badany)
     # ka = ekstrakcja_klas(aktualnie_badany)
-    polob(lo[0:18], 4, listatyt=lista_cech, colmap='winter')
+    # polob(lo[0:18], 4, listatyt=lista_cech, colmap='winter')
 
     Hu = ['Hu numbers' for i in range(7)]
     lista_cech = ['EulerNumber', 'Area', 'BoundingBoxArea', 'FilledArea', 'Extent', 'EquivDiameter', 'Solidity',
                   'FilledArea/BoundingBoxArea', ] + Hu
 
     temp_tc = np.c_[range(0, 18), tc[0:18]]
-
     table = tabulate(temp_tc, lista_cech, tablefmt='fancy_grid')
     print(table)
 
+    data = temp_tc
     # Classifying by areas
-    big_circle = 1413
-    medium_circle = 665
-    small_circle = 292
-    big_square = 1721
-    medium_square = 841
-    small_square = 271
+    classification_matrix = [
+        ["big_circle", 1413, 5],
+        ["medium_circle", 665, 4],
+        ["small_circle", 292, 0],
+        ["big_square", 1721, 79],
+        ["medium_square", 841, 54],
+        ["small_square", 271, 15],
+    ]
+
+    a = 271
+    b = 286
+    c = 286
+    # print(max(a, b, c) - min(a, b, c))
+
+    for i in range(data.shape[0]):  # wyciągam liczbę wierszy
+        for x in range(len(classification_matrix)):
+            if math.isclose(data[i][2], classification_matrix[x][1], abs_tol=classification_matrix[x][2]):
+                print(classification_matrix[x][0], " is object number: ", f'{data[i][0]:.0f}')
