@@ -1,146 +1,129 @@
-import numpy as np
 from Display_Video import *
+import numpy as np
+import pandas as pd
+import math
+import seaborn as sns
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import cv2
+
+from skimage.measure import label, regionprops
+
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import NearestCentroid
+from sklearn.naive_bayes import GaussianNB
+from sklearn.cluster import KMeans
+from sklearn.metrics import confusion_matrix
+from sklearn import tree
+
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.layers import Convolution2D, MaxPooling2D
+from tensorflow import keras
+
+# zmiana sposobu wyświetlania danych typu float
+pd.options.display.float_format = "{:.2f}".format
 
 
+# FUNKCJE POMOCNICZE
 
-
-def odczytaj(event, x, y, flags, param):
-    global klik, pozycja
-    if event == cv2.EVENT_LBUTTONDBLCLK:
-        klik = True
-        pozycja = [x, y]
-
-
-def i_have_no_clue(wideo):
-    prog_dolny = np.array([0, 0, 0])
-    prog_gorny = np.array([255, 255, 255])
-    klik = False
-    pozycja = [0, 0]
-    jedynki = np.array([1, 1, 1]).astype(np.uint8)
-    delta_wart = [5, 10, 20, 30, 40, 50]
-    delta_poz = 2
-    rozmiar_maski = 7
-    rozmycie = 0
-    rozmycie_max = 5
-    otwarcie = 0
-    otwarcie_max = 5
-    zamkniecie = 0
-    zamkniecie_max = 5
-    piksel = np.array([0, 0, 0])
-
-    while (1):
-        _, ramka_org = wideo.read()
-
-        ramka = ramka_org
-        if rozmycie > 0:
-            ramka = cv2.GaussianBlur(ramka_org, (rozmiar_maski, rozmiar_maski), rozmycie * 2)
+def pokaz(obraz, tytul="", osie=False, openCV=True, colmap='gray'):
+    if not (osie):
+        plt.axis("off")
+    if obraz.ndim == 2:
+        plt.imshow(obraz, cmap=colmap, vmin=0, vmax=255)
+    else:
+        if openCV:
+            plt.imshow(cv2.cvtColor(obraz, cv2.COLOR_BGR2RGB), vmin=0, vmax=255)
         else:
-            ramka = ramka_org
-        maska = cv2.inRange(ramka, prog_dolny, prog_gorny)
+            plt.imshow(obraz, interpolation='none', vmin=0, vmax=255)
+    plt.title(tytul)
 
-        if otwarcie > 0:
-            es = np.ones((2 * otwarcie + 1, 2 * otwarcie + 1), np.uint8)
-            segmentacja = cv2.morphologyEx(maska, cv2.MORPH_OPEN, es)
-        else:
-            segmentacja = maska
-        if zamkniecie > 0:
-            es = np.ones((2 * zamkniecie + 1, 2 * zamkniecie + 1), np.uint8)
-            segmentacja = cv2.morphologyEx(segmentacja, cv2.MORPH_CLOSE, es)
 
-        cv2.imshow('oryginalny', ramka_org)
-        cv2.imshow('org_filtrowany', ramka)
-        cv2.imshow('maska', maska)
-        cv2.imshow('segmentacja', segmentacja)
-        cv2.setMouseCallback('org_filtrowany', odczytaj)
-        k = cv2.waitKey(5) & 0xFF
-        zmiana = False
-        zmiana2 = False
-        if klik:
-            piksel = ramka[pozycja[1], pozycja[0]].astype(np.int)
-            print("odczyt piksela (" + str(pozycja[0]) + "," + str(pozycja[1]) + "), = " + str(piksel))
-            klik = False
-        # wyjscie z programu
-        if k == 27:
-            break
-        # zmiana parametrów rozmycia
-        elif k == ord('g'):
-            if rozmycie < rozmycie_max:
-                rozmycie += 1
-            else:
-                rozmycie = 0
-            zmiana2 = True
-        # zmiana parametrów otwarcie/zamknięcia
-        elif k == ord('o'):
-            if otwarcie < otwarcie_max:
-                otwarcie += 1
-            else:
-                otwarcie = 0
-            zmiana2 = True
-        elif k == ord('p'):
-            if zamkniecie < zamkniecie_max:
-                zamkniecie += 1
-            else:
-                zamkniecie = 0
-            zmiana2 = True
-            # progi pierwszej skladowej
-        elif k == ord('q') and prog_dolny[0] > 0:
-            prog_dolny[0] -= 1
-            zmiana = True
-        elif k == ord('w') and prog_dolny[0] < prog_gorny[0]:
-            prog_dolny[0] += 1
-            zmiana = True
-        elif k == ord('e') and prog_gorny[0] > prog_dolny[0]:
-            prog_gorny[0] -= 1
-            zmiana = True
-        elif k == ord('r') and prog_gorny[0] < 255:
-            prog_gorny[0] += 1
-            zmiana = True
-            # progi drugiej składowej
-        elif k == ord('a') and prog_dolny[1] > 0:
-            prog_dolny[1] -= 1
-            zmiana = True
-        elif k == ord('s') and prog_dolny[1] < prog_gorny[1]:
-            prog_dolny[1] += 1
-            zmiana = True
-        elif k == ord('d') and prog_gorny[1] > prog_dolny[1]:
-            prog_gorny[1] -= 1
-            zmiana = True
-        elif k == ord('f') and prog_gorny[1] < 255:
-            prog_gorny[1] += 1
-            zmiana = True
-            # progi trzeciej składowe
-        elif k == ord('z') and prog_dolny[2] > 0:
-            prog_dolny[2] -= 1
-            zmiana = True
-        elif k == ord('x') and prog_dolny[2] < prog_gorny[2]:
-            prog_dolny[2] += 1
-            zmiana = True
-        elif k == ord('c') and prog_gorny[2] > prog_dolny[2]:
-            prog_gorny[2] -= 1
-            zmiana = True
-        elif k == ord('v') and prog_gorny[2] < 255:
-            prog_gorny[2] += 1
-            zmiana = True
-            # parametry koloru na podstawie kliknięcia
-        elif k == ord(' '):
-            prog_dolny = np.clip(piksel - jedynki * delta_wart[delta_poz], 0, 255).astype(np.uint8)
-            prog_gorny = np.clip(piksel + jedynki * delta_wart[delta_poz], 0, 255).astype(np.uint8)
-            if (delta_poz < len(delta_wart) - 1):
-                delta_poz += 1
-            else:
-                delta_poz = 0
-            zmiana = True
+def polob(listaobr, ile_k=1, listatyt=[], openCV=True, wart_dpi=100, osie=False, colmap='gray'):
+    rozm_obr = 5
+    ile = len(listaobr)
+    if len(listatyt) == 0:
+        listatyt = [' '] * ile
+    ile_w = np.ceil(ile / ile_k).astype(int)
+    figsize_k = rozm_obr * ile_k
+    figsize_w = rozm_obr * ile_w
+    plt.figure(figsize=(figsize_k, figsize_w), dpi=wart_dpi)
+    for i in range(0, ile):
+        if isinstance(listaobr[i], np.ndarray):
+            plt.subplot(ile_w, ile_k, i + 1)
+            pokaz(listaobr[i], listatyt[i], osie, openCV, colmap)
+    plt.show()
 
-        if zmiana:
-            print(
-                "klawisz: " + str(k) + ", segm. - prog dolny: " + str(prog_dolny) + ", prog górny: " + str(prog_gorny))
-        if zmiana2:
-            print("klawisz: " + str(k) + ", Gauss: " + str(rozmycie) + ", otwarcie: " + str(
-                otwarcie) + ", zamkniecie: " + str(zamkniecie))
+def ekstrakcja_cech(o):
+    # ekstrakcja cech
+    # binaryzacja obrazu
+    b = cv2.inRange(o,(1,1,1),(255,255,255))
+    # etykietowanie i ekstrakcja cech
+    cechy = regionprops(label(b))
+    ile_obiektow = len(cechy)
+    lista_cech = ['EulerNumber','Area','BoundingBoxArea','FilledArea','Extent','EquivDiameter','Solidity']
+    ile_cech = len(lista_cech)
+    tabela_cech = np.zeros((ile_obiektow,ile_cech+1+7)) # "1" - to jedna cecha wyliczna, "7" to momenty Hu
+    listaob = []
+    for i in range(0,ile_obiektow):
+        yp,xp,yk,xk = cechy[i]['BoundingBox']
+        aktualny_obiekt = o[yp:yk,xp:xk,:]
+        ret,binobj = cv2.threshold(aktualny_obiekt[:,:,1],0,255,cv2.THRESH_BINARY)
+        listaob.append(binobj) #aktualny_obiekt)
+        # rejestrujemy wybrane cechy wyznaczone przez regionprops
+        for j in range(0,ile_cech):
+            tabela_cech[i,j] = cechy[i][lista_cech[j]]
+        # dodajemy momenty Hu
+        hu = cv2.HuMoments(cv2.moments(binobj))
+        hulog = (1 - 2*(hu>0).astype('int'))* np.nan_to_num(np.log10(np.abs(hu)),copy=True,neginf=-99,posinf=99)
+        tabela_cech[i,ile_cech+1:ile_cech+8] = hulog.flatten()
+    tabela_cech[:,ile_cech] = tabela_cech[:,3]/tabela_cech[:,2] # cecha wyliczana
+    tabela_cech[:,0] = (tabela_cech[:,0] == 1) # korekta liczby Eulera
+    return listaob, tabela_cech
+
+def ekstrakcja_klas(o):
+    # ekstrakcja kategorii
+    # binaryzacja obrazu
+    b = cv2.inRange(o,(1,1,1),(255,255,255))
+    # etykietowanie i ekstrakcja cech
+    cechy = regionprops(label(b))
+    ile_obiektow = len(cechy)
+    # wyszukiwanie kolorów
+    kolory = np.unique(o.reshape(-1, o.shape[2]), axis=0) # kolory w obrazie
+    # według kolorów przypiszemy klasy obiektom
+    kolory = kolory[1:7,:] # usuwa kolor tła
+    ile_kategorii = len(kolory)
+    kategorie = np.zeros((ile_obiektow,1)).astype('int')
+    listaob = []
+    for i in range(0,ile_obiektow):
+        x,y = cechy[i]['Coordinates'][1] # wsp. jednego z punktów obiektu - do próbkowania koloru
+        for k in range(0,ile_kategorii):
+            if list(o[x,y,:]) == list(kolory[k]):
+                break;
+        kategorie[i] = k
+    return kategorie
 
 
 if __name__ == '__main__':
     path_to_vid = './model/PA_1.avi'
+    path_to_pic = './model/PA_1_ref.png'
     video = cv2.VideoCapture(path_to_vid)
-    i_have_no_clue(video)
     destroy_vid(video)
+
+    # wczytanie obrazu
+    o = cv2.imread(path_to_pic)
+    b = cv2.inRange(o, (1, 1, 1), (255, 255, 255))
+    # etykietowanie
+    etykiety = label(b)
+    polob([o, b, etykiety], 3)
+    # wyznaczanie cech
+    cechy = regionprops(etykiety)
+
+    lo, tc = ekstrakcja_cech(o)
+    ka = ekstrakcja_klas(o)
+    print(ka)
+
+    polob(lo,10,colmap='winter')
