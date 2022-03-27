@@ -1,3 +1,5 @@
+import time
+
 from Classify_Image import *
 from Display_image import *
 from Process_Image import *
@@ -39,34 +41,41 @@ if __name__ == '__main__':
     o = cv2.imread(path_to_pic1)
     p = cv2.imread(path_to_pic2)
     q = cv2.VideoCapture(path_to_vid)
-    aktualnie_badany = o
+    aktualnie_badany = q
 
     if not q.isOpened():
         print("Error opening video stream or file")
+    i = 0
+    a = 10
+    while q.isOpened():
+        ret, frame = q.read()
+        cv2.imshow('Frame', frame)
+        i = i + 1
+        if i > 200:
+            a = a + 1
+            if ret:
+                cv2.imshow('Frame', frame)
+            b = cv2.inRange(frame, (0, 0, 0), (54, 53, 52)) + cv2.inRange(frame, (230, 229, 228), (255, 255, 255))  # a 12-16
+            etykiety = label(b)
+            # pokaz_wiele([aktualnie_badany, b, etykiety], 2)
+            cechy = regionprops(etykiety)
 
-    # while q.isOpened():
-    #     ret, frame = q.read()
-    #     if ret:
-    #         cv2.imshow('Frame', frame)
-    #     b = cv2.inRange(aktualnie_badany, (1, 1, 1), (255, 255, 255))
-    #     etykiety = label(b)
-    #     cechy = regionprops(etykiety)
-    #     lo, tc = ekstrakcja_cech(aktualnie_badany)
+            lo, tc = ekstrakcja_cech(frame)
+            classify_frame(tc)
+            ile_figur = [i for i in range(tc.shape[0])]
+            # pokaz_wiele(lo, 2, listatyt=ile_figur, colmap='winter')
+            print("klatka", i)
+            if cv2.waitKey(25) & 0xFF == ord('q'):
+                break
+
+    destroy_vid(q)
+
+    # b = cv2.inRange(aktualnie_badany, (1, 1, 1), (255, 255, 255))
+    # etykiety = label(b)  # etykietowanie
+    # # polob([aktualnie_badany, b, etykiety], 2)
+    # cechy = regionprops(etykiety)  # wyznaczanie cech
+    # lo, tc = ekstrakcja_cech(aktualnie_badany)
+    # # ka = ekstrakcja_klas(aktualnie_badany)
+    # pokaz_wiele(lo[0:5], 4, listatyt=lista_cech, colmap='winter')
     #
-    #
-    #     if cv2.waitKey(25) & 0xFF == ord('q'):
-    #         break
-    #
-    # destroy_vid(q)
-
-    b = cv2.inRange(aktualnie_badany, (1, 1, 1), (255, 255, 255))
-    etykiety = label(b)  # etykietowanie
-
-    # polob([aktualnie_badany, b, etykiety], 2)
-
-    cechy = regionprops(etykiety)  # wyznaczanie cech
-    lo, tc = ekstrakcja_cech(aktualnie_badany)
-    # ka = ekstrakcja_klas(aktualnie_badany)
-    pokaz_wiele(lo[0:5], 4, listatyt=lista_cech, colmap='winter')
-
-    classify_frame(tc)
+    # classify_frame(tc)
