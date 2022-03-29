@@ -55,7 +55,8 @@ if __name__ == '__main__':
             a = a + 1
             if ret:
                 cv2.imshow('Frame', frame)
-            b = cv2.inRange(frame, (0, 0, 0), (54, 53, 52)) + cv2.inRange(frame, (230, 229, 228), (255, 255, 255))  # a 12-16
+            b = cv2.inRange(frame, (0, 0, 0), (54, 53, 52)) + cv2.inRange(frame, (230, 229, 228),
+                                                                          (255, 255, 255))  # a 12-16
             etykiety = label(b)
             # pokaz_wiele([aktualnie_badany, b, etykiety], 2)
             cechy = regionprops(etykiety)
