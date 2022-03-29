@@ -18,9 +18,9 @@ def ekstrakcja_cech(obiekt_do_ekstrakcji_cech):
     # ekstrakcja cech
     # binaryzacja obrazu
     b = cv2.inRange(obiekt_do_ekstrakcji_cech, (0, 0, 0), (255, 255, 255)) - (
-                cv2.inRange(obiekt_do_ekstrakcji_cech, (0, 0, 0), (54, 53, 52)) + cv2.inRange(obiekt_do_ekstrakcji_cech,
-                                                                                              (230, 229, 228),
-                                                                                              (255, 255, 255)))
+            cv2.inRange(obiekt_do_ekstrakcji_cech, (0, 0, 0), (54, 53, 52)) + cv2.inRange(obiekt_do_ekstrakcji_cech,
+                                                                                          (230, 229, 228),
+                                                                                          (255, 255, 255)))
     # etykietowanie i ekstrakcja cech
     cechy = regionprops(label(b))
     ile_obiektow = len(cechy)
@@ -47,9 +47,14 @@ def ekstrakcja_cech(obiekt_do_ekstrakcji_cech):
             hulog = (1 - 2 * (hu > 0).astype('int')) * np.nan_to_num(np.log10(np.abs(hu)), copy=True, neginf=-99,
                                                                      posinf=99)
             tabela_cech[i, ile_cech + 1:ile_cech + 8] = hulog.flatten()
+
     tabela_cech[:, ile_cech] = tabela_cech[:, 3] / tabela_cech[:, 2]  # cecha wyliczana
     tabela_cech[:, 0] = (tabela_cech[:, 0] == 1)  # korekta liczby Eulera
-    return listaob, tabela_cech
+    # wyczyszczona_z_zer_tabela_cech = []
+    tabela_cech = np.nan_to_num(tabela_cech)
+    nw = tabela_cech[~np.all(tabela_cech == 0, axis=1)]
+
+    return listaob, nw
 
 
 def ekstrakcja_klas(obiekt_do_ekstrakcji_klas):

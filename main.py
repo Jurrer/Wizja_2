@@ -51,7 +51,7 @@ if __name__ == '__main__':
         ret, frame = q.read()
         cv2.imshow('Frame', frame)
         i = i + 1
-        if i > 200:
+        if i > 125:
             a = a + 1
             if ret:
                 cv2.imshow('Frame', frame)
@@ -63,9 +63,10 @@ if __name__ == '__main__':
 
             lo, tc = ekstrakcja_cech(frame)
             classify_frame(tc)
+            clear()
             ile_figur = [i for i in range(tc.shape[0])]
-            # pokaz_wiele(lo, 2, listatyt=ile_figur, colmap='winter')
-            print("klatka", i)
+            # pokaz_wiele(lo, 2, listatyt=ile_figur, colmap='winter') # na życzenie pokazujemy wykryte obiekty
+
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
 

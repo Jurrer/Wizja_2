@@ -1,17 +1,24 @@
 from tabulate import tabulate
 import numpy as np
 import math
+from os import system, name
 
 kordy = ['yp', 'xp', 'yk', 'xk']
 Hu = ['Hu numbers' for i in range(8)]
 lista_cech = ['EulerNumber', 'Area', 'BoundingBoxArea', 'FilledArea', 'Extent', 'EquivDiameter', 'Solidity',
               'FilledArea/BoundingBoxArea', ] + Hu + kordy + ["Kolory"]
-a = 271
-b = 286
-c = 286
 
 
-# print(max(a, b, c) - min(a, b, c))
+# define our clear function
+def clear():
+    # for windows the name is 'nt'
+    if name == 'nt':
+        _ = system('cls')
+
+    # and for mac and linux, the os.name is 'posix'
+    else:
+        _ = system('clear')
+
 
 def classify_frame(tc):  # tabela cech jest klasyfikowana
     ile_elementow = tc.shape[0]
