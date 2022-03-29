@@ -15,11 +15,11 @@ Kod programu należy wgrać na Teamsy do sekcji zadania (zadanie projekt wizja2)
 Punktacja za projekt wynosi 10 pkt, na które składają się:
 
 		
-- 2 pkt za detekcję koloru
+- 2 pkt za detekcję koloru ✅
 		
-- 1 pkt za detekcję wielkości
+- 1 pkt za detekcję wielkości ✅
 		
-- 2 pkt za detekcję kształtu
+- 2 pkt za detekcję kształtu ✅
 		
 - 1 pkt za zliczanie obiektów (z wyszczególnieniem ile było obiektów w każdej kategorii)
 		
