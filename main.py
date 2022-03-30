@@ -63,7 +63,9 @@ if __name__ == '__main__':
 
             lo, tc = ekstrakcja_cech(frame)
             classify_frame(tc)
+            cv2.waitKey(10)
             clear()
+            print('\n')
             ile_figur = [i for i in range(tc.shape[0])]
             # pokaz_wiele(lo, 2, listatyt=ile_figur, colmap='winter') # na życzenie pokazujemy wykryte obiekty
 
