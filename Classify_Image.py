@@ -29,8 +29,8 @@ def classify_frame(tc):  # tabela cech jest klasyfikowana
     # Classifying by areas
     classification_matrix = [  # macierz mówi o tym, jakie pole powierzchni definiuje jaki rozmiar, oraz offset
         ['big', 870, 98],
-        ['medium', 420, 50],
-        ['small', 182, 50],
+        ['medium', 420, 80],
+        ['small', 182, 80],
     ]
 
     classified_matrix = [[0] * 5 for _ in range(ile_elementow)]  # numer, rozmiar, kształt, kolor, pozycja yk

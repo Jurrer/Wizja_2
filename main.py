@@ -4,7 +4,6 @@ from Display_Video import *
 from Count_Objects import *
 import pandas as pd
 import cv2
-from skimage.measure import label, regionprops
 
 # zmiana sposobu wyświetlania danych typu float
 pd.options.display.float_format = "{:.2f}".format
@@ -22,19 +21,19 @@ if __name__ == '__main__':
     while q.isOpened():
         ret, frame = q.read()
         i = i + 1
-        if i > 125:
+        if (i > 125):
             if ret:
                 cv2.imshow('Frame', frame)  # wyświetlamy aktualną klatkę
                 lo, tc = ekstrakcja_cech(frame)  # ekstrachujemy cechy
                 cff = classify_frame(tc)  # klasyfykujemy obiekty na podstawie ich cech
                 data_for_counter.append(cff)
-                # cv2.waitKey(50) #opcjonalne spowolnienie
+                cv2.waitKey(100)  # opcjonalne spowolnienie
                 clear()  # czyścimy widok w konsoli
                 # print('\n')
-            else:
+            if i == 2288:
                 break
                 # pokaz_wiele(lo, 2, listatyt=ile_figur, colmap='winter') # na życzenie pokazujemy wykryte obiekty
-            if cv2.waitKey(25) & 0xFF == ord('q'):  # dodaje możliwość zamknięcia programu wysyłając klawisz q
+            if cv2.waitKey(1) & 0xFF == ord('q'):  # dodaje możliwość zamknięcia programu wysyłając klawisz q
                 break
     count_objects(data_for_counter)
     destroy_vid(q)
