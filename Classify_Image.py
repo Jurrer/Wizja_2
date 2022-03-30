@@ -18,7 +18,6 @@ def clear():
     # and for mac and linux, the os.name is 'posix'
 
 
-
 def classify_frame(tc):  # tabela cech jest klasyfikowana
     ile_elementow = tc.shape[0]
     temp_tc = np.c_[range(0, ile_elementow), tc]
@@ -26,9 +25,9 @@ def classify_frame(tc):  # tabela cech jest klasyfikowana
     # print(table)
     color = ["green", "yellow", "red"]
     size_coefficient = 0.9  # mówi o tym czy obiekt jest nazwany kołem czy kwadratem, jest to stosunek pola powierzchni obiektu do pola powierzchni bounding box
-    data = temp_tc # dla estetyki
+    data = temp_tc  # dla estetyki
     # Classifying by areas
-    classification_matrix = [ #macierz mówi o tym, jakie pole powierzchni definiuje jaki rozmiar, oraz offset
+    classification_matrix = [  # macierz mówi o tym, jakie pole powierzchni definiuje jaki rozmiar, oraz offset
         ['big', 870, 98],
         ['medium', 420, 50],
         ['small', 182, 50],
