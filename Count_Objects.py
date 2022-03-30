@@ -21,7 +21,7 @@ def count_objects(data_for_counter):
     MGC = 0  # medium green circle
     SGC = 0  # small green circle
     for i in range(len(data_for_counter)):
-        increment_flag = False
+        i = i + 1
         if math.isclose(data_for_counter[i - 1][4], data_for_counter[i][4], 3) and data_for_counter[i][4] < 40:
             if data_for_counter[i][1] == "big":
                 if data_for_counter[i][2] == "square":

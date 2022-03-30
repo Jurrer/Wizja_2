@@ -14,7 +14,6 @@ if __name__ == '__main__':
     path_to_vid = './model/PA_1.avi'
     # wczytanie obrazu
     q = cv2.VideoCapture(path_to_vid)
-    aktualnie_badany = q
     data_for_counter = []
 
     if not q.isOpened():
@@ -27,12 +26,14 @@ if __name__ == '__main__':
             if ret:
                 cv2.imshow('Frame', frame)  # wyświetlamy aktualną klatkę
                 lo, tc = ekstrakcja_cech(frame)  # ekstrachujemy cechy
-                classify_frame(tc)  # klasyfykujemy obiekty na podstawie ich cech
-                # cv2.waitKey(100) #opcjonalne spowolnienie
+                cff = classify_frame(tc)  # klasyfykujemy obiekty na podstawie ich cech
+                data_for_counter.append(cff)
+                # cv2.waitKey(50) #opcjonalne spowolnienie
                 clear()  # czyścimy widok w konsoli
                 # print('\n')
+            else:
+                break
                 # pokaz_wiele(lo, 2, listatyt=ile_figur, colmap='winter') # na życzenie pokazujemy wykryte obiekty
-
             if cv2.waitKey(25) & 0xFF == ord('q'):  # dodaje możliwość zamknięcia programu wysyłając klawisz q
                 break
     count_objects(data_for_counter)
