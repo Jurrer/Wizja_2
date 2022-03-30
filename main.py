@@ -1,6 +1,7 @@
 from Classify_Image import *
 from Process_Image import *
 from Display_Video import *
+from Count_Objects import *
 import pandas as pd
 import cv2
 from skimage.measure import label, regionprops
@@ -18,7 +19,7 @@ if __name__ == '__main__':
     p = cv2.imread(path_to_pic2)
     q = cv2.VideoCapture(path_to_vid)
     aktualnie_badany = q
-
+    data_for_counter = []
     if not q.isOpened():
         print("Error opening video stream or file")
     i = 0
@@ -38,7 +39,7 @@ if __name__ == '__main__':
             cechy = regionprops(etykiety)
 
             lo, tc = ekstrakcja_cech(frame)
-            classify_frame(tc)
+            data_for_counter.append(classify_frame(tc))
             cv2.waitKey(100)
             clear()
             print('\n')
@@ -47,6 +48,6 @@ if __name__ == '__main__':
 
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
-
+    count_objects(data_for_counter)
     destroy_vid(q)
 
