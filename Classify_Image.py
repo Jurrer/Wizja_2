@@ -36,7 +36,7 @@ def classify_frame(tc):  # tabela cech jest klasyfikowana
         ['small', 182, 50],
     ]
     #   0       1       2       3
-    classified_matrix = [[0] * 4 for _ in range(ile_elementow)]  # numer, rozmiar, kształt, kolor
+    classified_matrix = [[0] * 5 for _ in range(ile_elementow)]  # numer, rozmiar, kształt, kolor
 
     for i in range(ile_elementow):  # wyciągam liczbę wierszy
         for y in range(len(color)):  # szukamy koloru
@@ -51,8 +51,10 @@ def classify_frame(tc):  # tabela cech jest klasyfikowana
 
         if data[i][8] > size_coefficient:
             classified_matrix[i][2] = "square"
+            classified_matrix[i][4] = data[i][17]
         elif data[i][8] < size_coefficient:
             classified_matrix[i][2] = "circle"
+            classified_matrix[i][4] = data[i][17]
 
 
         if ile_elementow == 1:
