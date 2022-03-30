@@ -31,7 +31,7 @@ def classify_frame(tc):  # tabela cech jest klasyfikowana
     data = temp_tc
     # Classifying by areas
     classification_matrix = [
-        ['big', 870, 50],
+        ['big', 870, 98],
         ['medium', 420, 50],
         ['small', 182, 50],
     ]
@@ -54,19 +54,20 @@ def classify_frame(tc):  # tabela cech jest klasyfikowana
         elif data[i][8] < size_coefficient:
             classified_matrix[i][2] = "circle"
 
-        if classified_matrix[i][1]:
-            if ile_elementow == 1:
-                print(
-                    f'Currently we\'re seeing {classified_matrix[i][1]}, {classified_matrix[i][3]} {classified_matrix[i][2]}')
-            elif ile_elementow > 1 & i == 0:
-                print(
-                    f'Currently we\'re seeing {classified_matrix[i][1]}, {classified_matrix[i][3]} {classified_matrix[i][2]},')
-            elif ile_elementow > 1 & i > 0 & i != ile_elementow-1:
-                print(
-                    f'{classified_matrix[i][1]}, {classified_matrix[i][3]} {classified_matrix[i][2]},')
-            elif ile_elementow > 1 & i > 0 & i == ile_elementow-1:
-                print(
-                    f'and {classified_matrix[i][1]}, {classified_matrix[i][3]} {classified_matrix[i][2]}.')
+
+        if ile_elementow == 1:
+            print(
+                f'Currently we\'re seeing {classified_matrix[i][1]} {classified_matrix[i][3]} {classified_matrix[i][2]}')
+        elif ((ile_elementow > 1) * (i == 0)):
+            print(
+                f'Currently we\'re seeing {classified_matrix[i][1]} {classified_matrix[i][3]} {classified_matrix[i][2]},')
+        elif ((ile_elementow > 1)*( i > 0 ) * ( i+1 != ile_elementow)):
+            print(
+                f'{classified_matrix[i][1]} {classified_matrix[i][3]} {classified_matrix[i][2]},')
+        elif ((ile_elementow > 1) * (i > 0) * (i+1 == ile_elementow)):
+            print(
+                f'and {classified_matrix[i][1]} {classified_matrix[i][3]} {classified_matrix[i][2]}.')
+
 
     # print(classified_matrix)
     return classified_matrix

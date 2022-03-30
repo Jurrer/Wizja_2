@@ -1,33 +1,9 @@
-import time
-
 from Classify_Image import *
-from Display_image import *
 from Process_Image import *
 from Display_Video import *
 import pandas as pd
 import cv2
 from skimage.measure import label, regionprops
-
-# import numpy as np
-# import math
-# import seaborn as sns
-# import matplotlib as mpl
-# import matplotlib.pyplot as plt
-#
-#
-# from sklearn.model_selection import train_test_split
-# from sklearn.neighbors import NearestNeighbors
-# from sklearn.neighbors import KNeighborsClassifier
-# from sklearn.neighbors import NearestCentroid
-# from sklearn.naive_bayes import GaussianNB
-# from sklearn.cluster import KMeans
-# from sklearn.metrics import confusion_matrix
-# from sklearn import tree
-#
-# from keras.models import Sequential
-# from keras.layers import Dense, Dropout, Activation, Flatten
-# from keras.layers import Convolution2D, MaxPooling2D
-# from tensorflow import keras
 
 # zmiana sposobu wyświetlania danych typu float
 pd.options.display.float_format = "{:.2f}".format
@@ -63,7 +39,7 @@ if __name__ == '__main__':
 
             lo, tc = ekstrakcja_cech(frame)
             classify_frame(tc)
-            cv2.waitKey(10)
+            cv2.waitKey(100)
             clear()
             print('\n')
             ile_figur = [i for i in range(tc.shape[0])]
@@ -74,12 +50,3 @@ if __name__ == '__main__':
 
     destroy_vid(q)
 
-    # b = cv2.inRange(aktualnie_badany, (1, 1, 1), (255, 255, 255))
-    # etykiety = label(b)  # etykietowanie
-    # # polob([aktualnie_badany, b, etykiety], 2)
-    # cechy = regionprops(etykiety)  # wyznaczanie cech
-    # lo, tc = ekstrakcja_cech(aktualnie_badany)
-    # # ka = ekstrakcja_klas(aktualnie_badany)
-    # pokaz_wiele(lo[0:5], 4, listatyt=lista_cech, colmap='winter')
-    #
-    # classify_frame(tc)
