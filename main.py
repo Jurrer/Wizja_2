@@ -10,6 +10,7 @@ from skimage.measure import label, regionprops
 pd.options.display.float_format = "{:.2f}".format
 
 if __name__ == '__main__':
+
     path_to_vid = './model/PA_1.avi'
     path_to_pic1 = './model/PA_1_ref.png'
     path_to_pic2 = './model/obiekty.png'
@@ -20,6 +21,7 @@ if __name__ == '__main__':
     q = cv2.VideoCapture(path_to_vid)
     aktualnie_badany = q
     data_for_counter = []
+
     if not q.isOpened():
         print("Error opening video stream or file")
     i = 0
@@ -45,8 +47,15 @@ if __name__ == '__main__':
             print('\n')
             ile_figur = [i for i in range(tc.shape[0])]
             # pokaz_wiele(lo, 2, listatyt=ile_figur, colmap='winter') # na życzenie pokazujemy wykryte obiekty
+                cv2.imshow('Frame', frame)# wyświetlamy aktualną klatkę
+                lo, tc = ekstrakcja_cech(frame) #ekstrachujemy cechy
+                classify_frame(tc) #klasyfykujemy obiekty na podstawie ich cech
+                # cv2.waitKey(100)
+                clear() #czyścimy widok w konsoli
+                print('\n')
+                # pokaz_wiele(lo, 2, listatyt=ile_figur, colmap='winter') # na życzenie pokazujemy wykryte obiekty
 
-            if cv2.waitKey(25) & 0xFF == ord('q'):
+            if cv2.waitKey(25) & 0xFF == ord('q'): #dodaje możliwość zamknięcia programu wysyłając klawisz q
                 break
     count_objects(data_for_counter)
     destroy_vid(q)

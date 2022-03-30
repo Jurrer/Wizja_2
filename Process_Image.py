@@ -1,11 +1,10 @@
 import math
-
 import cv2
 import numpy as np
 from skimage.measure import label, regionprops
 
 
-def jakikolor(ob):
+def jakikolor(ob): #funkcja segreguje elementy pod kątem wartości kolorów zawartych w BoundingBox-ie
     if cv2.inRange(ob, (1, 1, 150), (50, 50, 255)).any():
         return 2
     elif cv2.inRange(ob, (1, 150, 1), (50, 255, 50)).any():
@@ -32,13 +31,13 @@ def ekstrakcja_cech(obiekt_do_ekstrakcji_cech):
 
     for i in range(0, ile_obiektow):
         yp, xp, yk, xk = cechy[i]['BoundingBox']
-        if math.isclose(yk - yp, xk - xp, abs_tol=2):
+        if math.isclose(yk - yp, xk - xp, abs_tol=2): # wykluczamy obiekty "wlatujące" i "wylatujące" z granic klatki
             tabela_cech[i, ile_cech + 9], tabela_cech[i, ile_cech + 10], tabela_cech[i, ile_cech + 11], tabela_cech[
                 i, ile_cech + 12] = yp, xp, yk, xk
             aktualny_obiekt = obiekt_do_ekstrakcji_cech[yp:yk, xp:xk, :]
             tabela_cech[i, ile_cech + 13] = jakikolor(aktualny_obiekt)
             ret, binobj = cv2.threshold(aktualny_obiekt[:, :, 1], 0, 255, cv2.THRESH_BINARY)
-            listaob.append(binobj)  # aktualny_obiekt)
+            listaob.append(binobj)  # aktualny_obiekt
             # rejestrujemy wybrane cechy wyznaczone przez regionprops
             for j in range(0, ile_cech):
                 tabela_cech[i, j] = cechy[i][lista_cech[j]]
@@ -52,34 +51,6 @@ def ekstrakcja_cech(obiekt_do_ekstrakcji_cech):
     tabela_cech[:, 0] = (tabela_cech[:, 0] == 1)  # korekta liczby Eulera
     # wyczyszczona_z_zer_tabela_cech = []
     tabela_cech = np.nan_to_num(tabela_cech)
-    nw = tabela_cech[~np.all(tabela_cech == 0, axis=1)]
+    nw = tabela_cech[~np.all(tabela_cech == 0, axis=1)] # wycinamy wiersze zerowe
 
     return listaob, nw
-
-
-def ekstrakcja_klas(obiekt_do_ekstrakcji_klas):
-    # ekstrakcja kategorii
-    # binaryzacja obrazu
-    b = cv2.inRange(obiekt_do_ekstrakcji_klas, (1, 1, 1), (255, 255, 255))
-    # etykietowanie i ekstrakcja cech
-    cechy = regionprops(label(b))
-    print("cechy: ", cechy)
-    ile_obiektow = len(cechy)
-    print("ile obiektów: ", ile_obiektow)
-    # wyszukiwanie kolorów
-    kolory = np.unique(obiekt_do_ekstrakcji_klas.reshape(-1, obiekt_do_ekstrakcji_klas.shape[2]),
-                       axis=0)  # kolory w obrazie
-    # według kolorów przypiszemy klasy obiektom
-    kolory = kolory[1:7, :]  # usuwa kolor tła
-    ile_kategorii = len(kolory)
-    print("Kategorie: ", ile_kategorii)
-
-    kategorie = np.zeros((ile_obiektow, 1)).astype('int')
-    listaob = []
-    for i in range(0, ile_obiektow):
-        x, y = cechy[i]['Coordinates'][1]  # wsp. jednego z punktów obiektu - do próbkowania koloru
-        for k in range(0, ile_kategorii):
-            if list(obiekt_do_ekstrakcji_klas[x, y, :]) == list(kolory[k]):
-                break
-        kategorie[i] = k
-    return kategorie

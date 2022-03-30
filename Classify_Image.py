@@ -3,10 +3,11 @@ import numpy as np
 import math
 from os import system, name
 
-kordy = ['yp', 'xp', 'yk', 'xk']
+kordy = ['yp', 'xp', 'yk', 'xk']  # koordynaty
 Hu = ['Hu numbers' for i in range(8)]
 lista_cech = ['EulerNumber', 'Area', 'BoundingBoxArea', 'FilledArea', 'Extent', 'EquivDiameter', 'Solidity',
-              'FilledArea/BoundingBoxArea', ] + Hu + kordy + ["Kolory"]
+              'FilledArea/BoundingBoxArea', ] + Hu + kordy + [
+                 "Kolory"]  # służy do nadania nagłówków tabeli w której podglądamy odczytane cechy
 
 
 # define our clear function
@@ -14,10 +15,8 @@ def clear():
     # for windows the name is 'nt'
     if name == 'nt':
         _ = system('cls')
-
     # and for mac and linux, the os.name is 'posix'
-    else:
-        _ = system('clear')
+
 
 
 def classify_frame(tc):  # tabela cech jest klasyfikowana
@@ -26,17 +25,16 @@ def classify_frame(tc):  # tabela cech jest klasyfikowana
     table = tabulate(temp_tc, lista_cech, tablefmt='fancy_grid')
     # print(table)
     color = ["green", "yellow", "red"]
-    size_coefficient = 0.9
-
-    data = temp_tc
+    size_coefficient = 0.9  # mówi o tym czy obiekt jest nazwany kołem czy kwadratem, jest to stosunek pola powierzchni obiektu do pola powierzchni bounding box
+    data = temp_tc # dla estetyki
     # Classifying by areas
-    classification_matrix = [
+    classification_matrix = [ #macierz mówi o tym, jakie pole powierzchni definiuje jaki rozmiar, oraz offset
         ['big', 870, 98],
         ['medium', 420, 50],
         ['small', 182, 50],
     ]
-    #   0       1       2       3
-    classified_matrix = [[0] * 5 for _ in range(ile_elementow)]  # numer, rozmiar, kształt, kolor
+
+    classified_matrix = [[0] * 5 for _ in range(ile_elementow)]  # numer, rozmiar, kształt, kolor, pozycja yk
 
     for i in range(ile_elementow):  # wyciągam liczbę wierszy
         for y in range(len(color)):  # szukamy koloru
@@ -56,20 +54,18 @@ def classify_frame(tc):  # tabela cech jest klasyfikowana
             classified_matrix[i][2] = "circle"
             classified_matrix[i][4] = data[i][17]
 
-
         if ile_elementow == 1:
             print(
                 f'Currently we\'re seeing {classified_matrix[i][1]} {classified_matrix[i][3]} {classified_matrix[i][2]}')
         elif ((ile_elementow > 1) * (i == 0)):
             print(
                 f'Currently we\'re seeing {classified_matrix[i][1]} {classified_matrix[i][3]} {classified_matrix[i][2]},')
-        elif ((ile_elementow > 1)*( i > 0 ) * ( i+1 != ile_elementow)):
+        elif ((ile_elementow > 1) * (i > 0) * (i + 1 != ile_elementow)):
             print(
                 f'{classified_matrix[i][1]} {classified_matrix[i][3]} {classified_matrix[i][2]},')
-        elif ((ile_elementow > 1) * (i > 0) * (i+1 == ile_elementow)):
+        elif ((ile_elementow > 1) * (i > 0) * (i + 1 == ile_elementow)):
             print(
                 f'and {classified_matrix[i][1]} {classified_matrix[i][3]} {classified_matrix[i][2]}.')
-
 
     # print(classified_matrix)
     return classified_matrix

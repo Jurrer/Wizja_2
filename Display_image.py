@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def pokaz(obraz, tytul="", osie=False, openCV=True, colmap='gray'):
+def pokaz(obraz, tytul="", osie=False, openCV=True,
+          colmap='gray'):  # możliwość pokazania jednego obrazu na podstawie macierzy numpy
     if not (osie):
         plt.axis("off")
     if obraz.ndim == 2:
@@ -16,7 +17,8 @@ def pokaz(obraz, tytul="", osie=False, openCV=True, colmap='gray'):
     plt.title(tytul)
 
 
-def pokaz_wiele(listaobr, ile_k=1, listatyt=[], openCV=True, wart_dpi=300, osie=True, colmap='gray'):
+def pokaz_wiele(listaobr, ile_k=1, listatyt=[], openCV=True, wart_dpi=300, osie=True,
+                colmap='gray'):  # funkcja używana do zobrazowania wykrytych obiektów
     rozm_obr = 5
     ile = len(listaobr)
     if len(listatyt) == 0:
